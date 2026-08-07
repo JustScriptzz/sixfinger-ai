@@ -1,9 +1,7 @@
 import express from 'express';
-import { createServer } from 'http';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
-import { Readable } from 'stream';
 
 dotenv.config();
 
@@ -16,7 +14,7 @@ const API_KEY  = process.env.API_KEY  || '';
 app.use(express.json({ limit: '4mb' }));
 app.use(express.static(join(__dirname, 'public')));
 
-// ── Health ──────────────────────────────────────────────────────────────────
+// ── Health ───────────────────────────────────────────────────────────────────
 app.get('/health', (_, res) => res.json({ ok: true }));
 
 // ── GET /api/models ──────────────────────────────────────────────────────────
@@ -81,27 +79,14 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ── POST /api/chat/nostream  (non-streaming fallback) ─────────────────────────
-app.post('/api/chat/nostream', async (req, res) => {
-  try {
-    const upstream = await fetch(`${API_BASE}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(API_KEY && { Authorization: `Bearer ${API_KEY}` }),
-      },
-      body: JSON.stringify({ ...req.body, stream: false }),
-    });
-    const data = await upstream.json();
-    res.status(upstream.status).json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // ── SPA catch-all ─────────────────────────────────────────────────────────────
 app.get('*', (_, res) =>
   res.sendFile(join(__dirname, 'public', 'index.html'))
 );
 
-app.listen(PORT, () => console.log(`🚀  SixFinger AI  →  http://localhost:${PORT}`));
+// ── Export for Vercel, listen locally ─────────────────────────────────────────
+export default app;
+
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => console.log(`🚀  http://localhost:${PORT}`));
+}
