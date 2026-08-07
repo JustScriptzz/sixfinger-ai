@@ -15,9 +15,9 @@ cp .env.example .env   # add your API_KEY
 npm run dev
 ```
 
-## Deploy to Railway
+## Deploy to Vercel
 
 1. Push this repo to GitHub
-2. New Railway project → Deploy from GitHub repo
-3. Add env vars: `API_KEY`, optionally `PORT`
-4. Done — Railway auto-detects Node.js via Nixpacks
+2. Import on [vercel.com](https://vercel.com) → New Project → select `sixfinger-ai`
+3. Add env var: `API_KEY=your_key`
+4. Deploy
